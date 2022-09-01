@@ -4,3 +4,5 @@ CoolProp
 numpy
 matplotlib
 scipy
+plotly
+pandas
