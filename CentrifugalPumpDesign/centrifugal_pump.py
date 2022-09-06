@@ -60,7 +60,7 @@ def view_pump_design_parameters(pump_design: CentrifugalPumpSpecification):
 
 
 def data_for_20sim(pump_design: CentrifugalPumpSpecification):
-        print('string fluid = {};'.format(pump_design.fluid))
+        print('string fluid = \'{}\';'.format(pump_design.fluid))
         print('real impeller_inner_diameter = {};'.format(pump_design.impeller_inner_diameter))
         print('real impeller_outer_diameter = {};'.format(pump_design.impeller_outer_diameter))
         print('real impeller_inlet_passage_witdh = {};'.format(pump_design.inlet_blade_height))
@@ -70,13 +70,17 @@ def data_for_20sim(pump_design: CentrifugalPumpSpecification):
         print('real number_of_impeller_blades = {};'.format(pump_design.number_of_impeller_blades))
         print('real impeller_material_roughness = {};'.format(pump_design.roughness))
         print('real beta_1_deg = {};'.format(np.rad2deg(pump_design.blade_inlet_angle_rad)))
-        print('real beta_2_deg = {};'.format(np.deg2rad(pump_design.blade_outlet_angle_rad)))
-        print('real alpha_1_deg = {};'.format(np.deg2rad(pump_design.inlet_flow_angle_rad)))
+        print('real beta_2_deg = {};'.format(np.rad2deg(pump_design.blade_outlet_angle_rad)))
+        print('real alpha_1_deg = {};'.format(np.rad2deg(pump_design.inlet_flow_angle_rad)))
         print('real casting_volute_throat_area = {};'.format(pump_design.volute_throat_area))
         print('real casting_volute_height = {};'.format(pump_design.volute_height))
         print('real casting_diffusor_area_ratio = {};'.format(pump_design.diffuser_area_ratio))
         print('real specific_speed = {};'.format(pump_design.specific_speed))
-        print('boolean open_impeller = {};'.format(pump_design.open_impeller))
+        if pump_design.open_impeller:
+            open_impeller_str = 'true'
+        else:
+            open_impeller_str = 'false'
+        print('boolean open_impeller = {};'.format(open_impeller_str))
 
 
 class PumpDesign:
@@ -480,7 +484,7 @@ class CentrifugalPump:
                 if pump_performance.head < 0:
                     break
                 n.append(speed)
-                Q.append(flow * 1000 * 60)
+                Q.append(flow * 3600)
                 H.append(pump_performance.head)
                 Hth.append(pump_performance.head_theoretical)
                 inc_loss.append(pump_performance.pump_incidence_loss)
@@ -500,7 +504,7 @@ class CentrifugalPump:
         H_min = 0
         H_max = max(H)
         dh = 1
-        grid_x, grid_y = np.mgrid[min_Q * 1000 * 60:max_Q * 1000 * 60:0.0001 * 1000 * 60, H_min:H_max:0.1]
+        grid_x, grid_y = np.mgrid[min_Q * 3600:max_Q * 3600:0.0001 * 3600, H_min:H_max:0.1]
 
         points = np.column_stack((Q, H))
         values = eta
@@ -523,7 +527,7 @@ class CentrifugalPump:
         self.fig_flow_power_out = px.line(pump_df, x="Flow [l/min]", y="Power out", color="Speed", title="Power out")
         self.fig_flow_power_out.show()
 
-        self.fig_flow_eta =go.Figure(data = go.Contour(z=grid_z2.T, x=np.arange(min_Q * 60 * 1000, max_Q * 60 * 1000, dQ * 60 * 1000).T, y=np.arange(H_min, H_max, 0.1)))
+        self.fig_flow_eta =go.Figure(data = go.Contour(z=grid_z2.T, x=np.arange(min_Q * 3600, max_Q * 3600, dQ * 3600).T, y=np.arange(H_min, H_max, 0.1)))
         self.fig_flow_eta.show()
 
         self.fig_flow_incloss = px.line(pump_df, x="Flow [l/min]", y='Incidence loss', color="Speed", title="Incidence loss")
