@@ -1,4 +1,11 @@
-from CentrifugalPumpDesign.centrifugal_pump import PumpDesign, CentrifugalPump
+try:
+    from CentrifugalPumpDesign.centrifugal_pump import PumpDesign, CentrifugalPump
+except ImportError:
+    from pathlib import Path
+    import sys
+
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
+    from CentrifugalPumpDesign.centrifugal_pump import PumpDesign, CentrifugalPump
 import streamlit as st
 import numpy as np
 
